@@ -13,7 +13,7 @@ function initializeMainMap() {
     }).addTo(map);
 
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
+        navigator.geolocation.getCurrentPosition(function (position) {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             userCurrentLocation = { lat, lng };
@@ -42,7 +42,7 @@ function initializeLocationMap() {
     }).addTo(locationMap);
 
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
+        navigator.geolocation.getCurrentPosition(function (position) {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             userCurrentLocation = { lat, lng };
@@ -57,7 +57,7 @@ function initializeLocationMap() {
     const searchControl = L.Control.geocoder({
         placeholder: 'Search for a place...',
         errorMessage: 'Location not found',
-    }).on('markgeocode', function(e) {
+    }).on('markgeocode', function (e) {
         const latLng = e.geocode.center;
         selectedLocation = latLng;
         locationMap.setView(latLng, 13);
@@ -66,7 +66,7 @@ function initializeLocationMap() {
         selectedMarker = L.marker(latLng).addTo(locationMap);
     }).addTo(locationMap);
 
-    locationMap.on('click', function(e) {
+    locationMap.on('click', function (e) {
         selectedLocation = e.latlng;
         document.getElementById('chosenLocation').innerText = `Chosen Location: ${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)}`;
         if (selectedMarker) locationMap.removeLayer(selectedMarker);
@@ -74,7 +74,7 @@ function initializeLocationMap() {
     });
 }
 
-document.getElementById('addLocationCheckbox').addEventListener('change', function() {
+document.getElementById('addLocationCheckbox').addEventListener('change', function () {
     const locationMapContainer = document.getElementById('locationMapContainer');
     if (this.checked) {
         locationMapContainer.style.display = 'block';
@@ -88,7 +88,7 @@ document.getElementById('addLocationCheckbox').addEventListener('change', functi
     }
 });
 
-document.getElementById('addTaskBtn').addEventListener('click', function() {
+document.getElementById('addTaskBtn').addEventListener('click', function () {
     const taskInput = document.getElementById('taskInput');
     const taskDescription = document.getElementById('taskDescription').value.trim();
 
@@ -115,32 +115,34 @@ function updateTaskList() {
     taskList.innerHTML = '';
     tasks.forEach((task, index) => {
         const li = document.createElement('li');
-        li.innerHTML = `<strong>${index + 1}. ${task.description}</strong><br/><small>${task.details}</small>`;
+        li.innerHTML = `
+            <strong>${index + 1}. ${task.description}</strong><br/>
+            <small>${task.details}</small><br/>
+            <input type="checkbox" class="task-completion" data-index="${index}" ${task.completed ? 'checked' : ''}>
+            <span>${task.completed ? '(Completed)' : ''}</span>
+        `;
         if (task.location) {
             li.innerHTML += `<br/><em>Location: ${task.location.lat.toFixed(4)}, ${task.location.lng.toFixed(4)}</em>`;
         }
-        
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = task.completed;
-        checkbox.addEventListener('change', () => {
-            task.completed = checkbox.checked;
-            updateMapMarkers(); // Update markers whenever a task is checked or unchecked
-        });
-
-        li.appendChild(checkbox);
         taskList.appendChild(li);
+    });
+
+    // Add event listeners to checkboxes
+    document.querySelectorAll('.task-completion').forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            const taskIndex = this.getAttribute('data-index');
+            tasks[taskIndex].completed = this.checked;
+            updateTaskList();
+            updateMapMarkers();
+
+            // Check for nearby tasks after marking a task as completed or not
+            notifyNearbyTasks();
+        });
     });
 }
 
 function updateMapMarkers() {
-    // Clear existing markers
-    if (taskMarkers.length) {
-        taskMarkers.forEach(marker => map.removeLayer(marker));
-        taskMarkers = []; // Reset the array after removal
-    }
-    
-    // Only show incomplete tasks
+    if (taskMarkers.length) taskMarkers.forEach(marker => map.removeLayer(marker));
     const tasksWithLocations = tasks.filter(task => task.location && !task.completed);
 
     if (tasksWithLocations.length) {
@@ -154,12 +156,10 @@ function updateMapMarkers() {
                     iconAnchor: [17, 50]
                 })
             }).addTo(map).bindPopup(`<strong>${task.description}</strong><br/>${task.details}`);
-            taskMarkers.push(marker); // Add the new marker to the array
+            taskMarkers.push(marker);
         });
         map.invalidateSize();
-    } else {
-        document.getElementById('mapContainer').style.display = 'none';
-    }
+    } else document.getElementById('mapContainer').style.display = 'none';
 }
 
 function notifyNearbyTasks() {
@@ -174,16 +174,22 @@ function notifyNearbyTasks() {
 
 function checkProximityAndNotify() {
     const radius = 0.0005; // roughly 50 meters
+    let notified = false;
+
     tasks.forEach(task => {
-        if (task.location && userCurrentLocation && !task.completed) { // Only notify for incomplete tasks
+        if (task.location && userCurrentLocation && !task.completed) {
             const distance = Math.sqrt(
                 Math.pow(task.location.lat - userCurrentLocation.lat, 2) +
                 Math.pow(task.location.lng - userCurrentLocation.lng, 2)
             );
+
             if (distance < radius) {
-                new Notification(`Task nearby: ${task.description}`, {
-                    body: task.details
-                });
+                if (!notified) {
+                    new Notification(`Task nearby: ${task.description}`, {
+                        body: task.details
+                    });
+                    notified = true; // Only notify once per check
+                }
             }
         }
     });
@@ -191,6 +197,6 @@ function checkProximityAndNotify() {
 
 window.onload = () => {
     initializeMainMap();
-    // Check for nearby tasks periodically
-    setInterval(notifyNearbyTasks, 300000); // Every 30 seconds -30000 , 5 minutes - 300000
+    // Check for nearby tasks periodically every 5 minutes (300000 ms)
+    setInterval(notifyNearbyTasks, 300000); // Every 5 minutes
 };
