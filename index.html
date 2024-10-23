@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Tracker with Location Selection</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Task Tracker with Location Selection</h1>
+
+        <!-- Task Form -->
+        <div class="task-form">
+            <input type="text" id="taskInput" placeholder="Enter a task" />
+            <label>
+                <input type="checkbox" id="addLocationCheckbox"> Add a custom location to this task
+            </label>
+            <button id="addTaskBtn">Add Task</button>
+        </div>
+
+        <!-- Map for choosing a location (hidden by default) -->
+        <div id="locationMapContainer">
+            <h2>Choose Location</h2>
+            <div id="locationMap"></div>
+            <p id="chosenLocation">No location chosen</p>
+        </div>
+
+        <!-- Task List -->
+        <h2>Tasks</h2>
+        <ul id="taskList"></ul>
+
+        <!-- Map Container for task locations -->
+        <div id="mapContainer">
+            <h2>Task Locations</h2>
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>
