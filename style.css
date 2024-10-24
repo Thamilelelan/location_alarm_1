@@ -1,0 +1,124 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #DFF2EB;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    background: #FFFFFF;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+h1 {
+    color: #2D34A6;
+    text-align: center;
+}
+
+h2 {
+    color: #28A8B8;
+}
+
+.task-input {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#taskInput, #taskDescription {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#taskDescription {
+    height: 80px;
+    resize: none;
+}
+
+#addTaskBtn {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #28A8B8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#addTaskBtn:hover {
+    background-color: #1f8492;
+}
+
+.location-map {
+    margin: 20px 0;
+}
+
+.task-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.task-list ul li {
+    background: #7AB2D3;
+    padding: 10px;
+    margin-bottom: 10px;
+    color: white;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.custom-div-icon {
+    position: relative;
+    width: 35px;
+    height: 50px;
+}
+
+.custom-div-icon .marker {
+    background-color: #e74c3c;
+    border-radius: 20px 20px 0 0;
+    width: 35px;
+    height: 35px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 3px solid white;
+}
+
+.custom-div-icon .marker::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 15px;
+    height: 15px;
+    background-color: #e74c3c;
+    border: 3px solid white;
+    border-radius: 50%;
+}
+
+.custom-div-icon .numbered-marker {
+    color: white;
+    text-align: center;
+    line-height: 35px;
+    font-weight: bold;
+    font-size: 16px;
+    position: relative;
+    z-index: 1;
+}
+
+#chosenLocation {
+    margin-top: 10px;
+    color: #666;
+}
